@@ -1,0 +1,60 @@
+{
+    "namespace": "org.jboss.sbomer.generation.kafka.model",
+    "type": "record",
+    "name": "GenerationsRequest",
+    "fields": [
+        {
+            "name": "requests",
+            "type": {
+                "type": "array",
+                "items": {
+                    "type": "record",
+                    "name": "GenerationRequestSpec",
+                    "fields": [
+                        {
+                            "name": "target",
+                            "type": {
+                                "type": "record",
+                                "name": "TargetSpec",
+                                "fields": [
+                                    { "name": "type", "type": "string" },
+                                    { "name": "identifier", "type": "string" }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "generator",
+                            "type": ["null", {
+                                "type": "record",
+                                "name": "GeneratorVersionConfigSpec",
+                                "fields": [
+                                    { "name": "name", "type": "string" },
+                                    { "name": "version", "type": "string" },
+                                    {
+                                        "name": "config",
+                                        "type": {
+                                            "type": "record",
+                                            "name": "GeneratorConfigSpec",
+                                            "fields": [
+                                                { "name": "format", "type": "string" },
+                                                {
+                                                    "name": "resources",
+                                                    "type": {
+                                                        "type": "record",
+                                                        "name": "ResourcesSpec",
+                                                        "fields": []
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }],
+                            "default": null
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

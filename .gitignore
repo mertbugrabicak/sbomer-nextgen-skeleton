@@ -1,0 +1,67 @@
+#
+# Compiled output
+#
+**/target/
+!/target/ # Keep top-level 'target' if modules are not nested and you're using a flat structure, though typically multi-module projects have nested 'target' directories.
+# A common convention for multi-module is to ignore all 'target' directories:
+**/target/
+
+#
+# IntelliJ IDEA
+#
+# Directories
+.idea/
+# Files
+*.iml
+*.iws
+*.ipr
+out/
+
+#
+# Maven
+#
+# Generally handled by '**/target/' but good to be explicit for safety
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+build-helper-maven-plugin.xml
+target/
+target-ide/
+
+#
+# Gradle (if you might use it alongside/instead of Maven)
+#
+.gradle/
+build/
+!/build/ # This is often included to prevent recursive ignore; remove if you have a flat structure.
+**/build/
+!**/build/
+# Specific files
+*.log
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+hs_err_pid*
+
+#
+# OS/Environment files
+#
+.DS_Store
+Thumbs.db
+ehthumbs.db
+.classpath
+.project
+.settings
+*.swp
+
+#
+# Logs and other generated files
+#
+logs/
+temp/
+tmp/
