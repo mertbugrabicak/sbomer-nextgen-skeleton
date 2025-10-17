@@ -1,8 +1,9 @@
-#!/usr/bin/env bash
-
-pushd errata-tool-adapter || exit
-mvn clean package
-popd
+#!/bin/env/bash
 
 podman-compose down
+
+echo "Building the application with Maven..."
+mvn clean package
+
+echo "Building the application image and starting all services..."
 podman-compose up --build

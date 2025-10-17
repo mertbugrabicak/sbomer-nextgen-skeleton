@@ -1,0 +1,1 @@
+The schemas temporarily reside in a high-level directory before they can be accessed through an Apicurio registry.
