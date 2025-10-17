@@ -24,10 +24,10 @@
       }
     },
     {
-      "name": "Data",
+      "name": "RequestData",
       "doc": "The core business data payload of the event.",
       "type": {
-        "name": "DataSpec",
+        "name": "RequestDataSpec",
         "type": "record",
         "fields": [
           {
