@@ -13,6 +13,7 @@
 
     <modules>
         <module>errata-tool-adapter</module>
+        <module>generation-dispatcher</module>
     </modules>
 
     <properties>

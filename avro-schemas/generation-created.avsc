@@ -12,7 +12,6 @@
         "type": "record",
         "fields": [
           { "name": "EventId", "type": "string" },
-          { "name": "RequestId", "type": ["null", "string"], "default": null },
           { "name": "Source", "type": ["null", "string"], "default": null },
           { "name": "SpecVersion", "type": "string", "default": "1.0" },
           { "name": "Timestamp", "type": { "type": "long", "logicalType": "timestamp-millis" } }
@@ -26,6 +25,7 @@
         "name": "GenerationDataSpec",
         "type": "record",
         "fields": [
+          { "name": "RequestId", "type": ["null", "string"], "default": null },
           {
             "name": "GenerationRequest",
             "doc": "The original, individual generation request.",

@@ -12,7 +12,6 @@
         "type": "record",
         "fields": [
           { "name": "EventId", "type": "string", "doc": "A unique identifier for this specific event instance." },
-          { "name": "RequestId", "type": ["null", "string"], "default": null, "doc": "An optional identifier to correlate this event with an initial request." },
           { "name": "Source", "type": ["null", "string"], "default": null, "doc": "The source or service that originated this event, e.g., 'errata-tool-adapter'." },
           { "name": "SpecVersion", "type": "string", "default": "1.0", "doc": "The version of this event schema." },
           {
@@ -30,6 +29,7 @@
         "name": "RequestDataSpec",
         "type": "record",
         "fields": [
+          { "name": "RequestId", "type": ["null", "string"], "default": null, "doc": "An optional identifier to correlate this event with an initial request." },
           {
             "name": "Publishers",
             "doc": "A list of publishers or downstream systems that should be notified.",
