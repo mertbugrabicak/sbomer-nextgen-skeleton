@@ -9,7 +9,7 @@ import java.util.List;
 import org.jboss.sbomer.adapter.et.core.domain.advisory.Advisory;
 import org.jboss.sbomer.adapter.et.core.domain.advisory.Build;
 import org.jboss.sbomer.adapter.et.core.port.spi.ErrataTool;
-import org.jboss.sbomer.adapter.et.core.port.spi.GenerationService;
+import org.jboss.sbomer.adapter.et.core.port.spi.GenerationRequestService;
 import org.jboss.sbomer.adapter.et.core.service.AdvisoryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ public class AdvisoryServiceTest {
     private AdvisoryService advisoryService;
 
     @Mock
-    private GenerationService generationService;
+    private GenerationRequestService generationRequestService;
 
     @Test
     void shouldFetchBuildList() {

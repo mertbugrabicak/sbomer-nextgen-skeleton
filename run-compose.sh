@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pushd errata-tool-adapter
+pushd errata-tool-adapter || exit
 mvn clean package
 popd
 
