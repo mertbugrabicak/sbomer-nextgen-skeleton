@@ -1,0 +1,35 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.dispatcher",
+  "type": "record",
+  "name": "GenerationCreated",
+  "doc": "Event published for a single, specific SBOM generation task with a fully resolved recipe.",
+  "fields": [
+    { "name": "Context", "type": "org.jboss.sbomer.events.kafka.common.ContextSpec" },
+    {
+      "name": "GenerationData",
+      "type": {
+        "name": "GenerationDataSpec",
+        "type": "record",
+        "fields": [
+          { "name": "RequestId", "type": ["null", "string"], "default": null },
+          { "name": "GenerationRequest", "type": "org.jboss.sbomer.events.kafka.common.GenerationRequestSpec" },
+          {
+            "name": "Recipe",
+            "type": {
+              "name": "RecipeSpec",
+              "type": "record",
+              "fields": [
+                { "name": "Generator", "type": "org.jboss.sbomer.events.kafka.common.GeneratorSpec" },
+                {
+                  "name": "Enhancers",
+                  "type": { "type": "array", "items": "org.jboss.sbomer.events.kafka.common.EnhancerSpec" },
+                  "default": []
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

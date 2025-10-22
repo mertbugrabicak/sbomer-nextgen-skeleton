@@ -1,0 +1,12 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.common",
+  "type": "record",
+  "name": "ContextSpec",
+  "doc": "The metadata envelope for an event.",
+  "fields": [
+    { "name": "EventId", "type": "string", "doc": "A unique identifier for this specific event instance." },
+    { "name": "Source", "type": ["null", "string"], "default": null, "doc": "The source or service that originated this event." },
+    { "name": "SpecVersion", "type": "string", "default": "1.0", "doc": "The version of the event schema." },
+    { "name": "Timestamp", "type": { "type": "long", "logicalType": "timestamp-millis" }, "doc": "The time the event was generated, in UTC milliseconds since the epoch." }
+  ]
+}

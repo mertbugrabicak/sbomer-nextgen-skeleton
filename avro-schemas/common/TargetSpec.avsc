@@ -1,0 +1,10 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.common",
+  "type": "record",
+  "name": "TargetSpec",
+  "doc": "Defines the target for an SBOM generation.",
+  "fields": [
+    { "name": "Type", "type": "string" },
+    { "name": "Identifier", "type": "string" }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.handler",
+  "type": "record",
+  "name": "RequestsCreated",
+  "doc": "Event published when one or more SBOM generation requests are created.",
+  "fields": [
+    { "name": "Context", "type": "org.jboss.sbomer.events.kafka.common.ContextSpec" },
+    {
+      "name": "RequestData",
+      "type": {
+        "name": "RequestDataSpec",
+        "type": "record",
+        "fields": [
+          { "name": "RequestId", "type": ["null", "string"], "default": null },
+          {
+            "name": "Publishers",
+            "type": { "type": "array", "items": "org.jboss.sbomer.events.kafka.common.PublisherSpec" },
+            "default": []
+          },
+          {
+            "name": "GenerationRequests",
+            "type": { "type": "array", "items": "org.jboss.sbomer.events.kafka.common.GenerationRequestSpec" }
+          }
+        ]
+      }
+    }
+  ]
+}

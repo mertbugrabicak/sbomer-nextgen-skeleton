@@ -5,7 +5,14 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.sbomer.dispatcher.core.port.api.GenerationDispatcher;
 import org.jboss.sbomer.dispatcher.core.port.spi.GenerationEventPublisher;
-import org.jboss.sbomer.events.kafka.model.*;
+import org.jboss.sbomer.events.kafka.common.ContextSpec;
+import org.jboss.sbomer.events.kafka.common.EnhancerSpec;
+import org.jboss.sbomer.events.kafka.common.GeneratorSpec;
+import org.jboss.sbomer.events.kafka.common.TargetSpec;
+import org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated;
+import org.jboss.sbomer.events.kafka.dispatcher.GenerationDataSpec;
+import org.jboss.sbomer.events.kafka.dispatcher.RecipeSpec;
+import org.jboss.sbomer.events.kafka.handler.*;
 
 import java.time.Instant;
 import java.util.ArrayList;

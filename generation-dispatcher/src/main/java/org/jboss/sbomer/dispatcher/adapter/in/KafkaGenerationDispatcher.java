@@ -5,7 +5,7 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jboss.sbomer.dispatcher.core.port.api.GenerationDispatcher;
-import org.jboss.sbomer.events.kafka.model.RequestsCreated;
+import org.jboss.sbomer.events.kafka.handler.RequestsCreated;
 
 /**
  * TODO: Implement the event handling and dispatching of generations from requests.

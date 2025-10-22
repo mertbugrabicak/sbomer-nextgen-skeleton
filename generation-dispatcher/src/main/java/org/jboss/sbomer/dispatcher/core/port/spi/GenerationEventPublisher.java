@@ -1,7 +1,7 @@
 package org.jboss.sbomer.dispatcher.core.port.spi;
 
 
-import org.jboss.sbomer.events.kafka.model.GenerationCreated;
+import org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated;
 
 /**
  * <p>

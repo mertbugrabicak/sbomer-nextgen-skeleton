@@ -1,0 +1,11 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.common",
+  "type": "record",
+  "name": "GeneratorSpec",
+  "doc": "Defines a specific Generator and its configuration.",
+  "fields": [
+    { "name": "name", "type": "string" },
+    { "name": "version", "type": "string" },
+    { "name": "options", "type": { "type": "map", "values": "string" }, "default": {} }
+  ]
+}

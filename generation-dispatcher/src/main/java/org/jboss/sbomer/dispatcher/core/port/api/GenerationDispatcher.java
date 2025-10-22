@@ -1,7 +1,7 @@
 package org.jboss.sbomer.dispatcher.core.port.api;
 
-import org.jboss.sbomer.events.kafka.model.RequestDataSpec;
-import org.jboss.sbomer.events.kafka.model.RequestsCreated;
+import org.jboss.sbomer.events.kafka.handler.RequestDataSpec;
+import org.jboss.sbomer.events.kafka.handler.RequestsCreated;
 
 import java.util.List;
 

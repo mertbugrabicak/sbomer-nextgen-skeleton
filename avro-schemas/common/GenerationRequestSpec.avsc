@@ -1,0 +1,10 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.common",
+  "type": "record",
+  "name": "GenerationRequestSpec",
+  "doc": "A single, identifiable request to generate an SBOM for a specific target.",
+  "fields": [
+    { "name": "GenerationId", "type": "string" },
+    { "name": "Target", "type": "org.jboss.sbomer.events.kafka.common.TargetSpec" }
+  ]
+}

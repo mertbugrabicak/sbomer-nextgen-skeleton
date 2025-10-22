@@ -1,0 +1,9 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.common",
+  "type": "record",
+  "name": "PublisherSpec",
+  "fields": [
+    { "name": "name", "type": "string" },
+    { "name": "options", "type": { "type": "map", "values": "string" }, "default": {} }
+  ]
+}
