@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   kafka:
     image: confluentinc/cp-kafka:7.5.0
@@ -43,20 +45,31 @@ services:
     environment:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
-    # --- NO VOLUMES SECTION ---
-    # Data will now be ephemeral and will be lost on container restart.
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  # --- NEW: API Gateway Service ---
+  # This is the new single entry point for your system.
+  api-gateway:
+    build:
+      context: ./api-gateway # Assumes your gateway project is in this directory
+      dockerfile: src/main/docker/Dockerfile.jvm
+    ports:
+      - "8080:8080" # This is the main public port now
+    depends_on:
+      - errata-tool-adapter # Wait for the adapter to be available before starting
+    environment:
+      # This URL is used by the gateway's REST client to find the adapter internally
+      ERRATA_TOOL_ADAPTER_URL: http://errata-tool-adapter:8080
+
   errata-tool-adapter:
     build:
       context: ./errata-tool-adapter
       dockerfile: src/main/docker/Dockerfile.jvm
-    ports:
-      - "8080:8080"
+    # The "ports" section is removed from here so it's not exposed externally.
     depends_on:
       kafka:
         condition: service_healthy
