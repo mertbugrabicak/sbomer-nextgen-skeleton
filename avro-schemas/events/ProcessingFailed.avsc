@@ -1,0 +1,32 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.error",
+  "type": "record",
+  "name": "ProcessingFailed",
+  "doc": "Event published when a component encounters an unrecoverable error.",
+  "fields": [
+    { "name": "Context", "type": "org.jboss.sbomer.events.kafka.common.ContextSpec" },
+    {
+      "name": "ErrorData",
+      "type": {
+        "name": "ErrorDataSpec",
+        "type": "record",
+        "fields": [
+          {
+            "name": "Failure",
+            "doc": "The standardized details of the failure.",
+            "type": "org.jboss.sbomer.events.kafka.common.FailureSpec"
+          },
+          {
+            "name": "SourceEvent",
+            "doc": "The original event that was being processed when the error occurred.",
+            "type": [
+              "null",
+              "org.jboss.sbomer.events.kafka.handler.RequestsCreated",
+              "org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

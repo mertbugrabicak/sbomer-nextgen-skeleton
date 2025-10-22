@@ -1,0 +1,25 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.common",
+  "type": "record",
+  "name": "FailureSpec",
+  "doc": "A reusable data structure that describes a processing failure.",
+  "fields": [
+    {
+      "name": "reason",
+      "type": "string",
+      "doc": "A human-readable message explaining why the processing failed."
+    },
+    {
+      "name": "errorCode",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "An optional, machine-readable error code for programmatic handling."
+    },
+    {
+      "name": "details",
+      "type": { "type": "map", "values": "string" },
+      "default": {},
+      "doc": "An optional map for additional, unstructured context about the error."
+    }
+  ]
+}
