@@ -4,11 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.sbomer.dispatcher.core.port.api.GenerationDispatcher;
+import org.jboss.sbomer.dispatcher.core.port.spi.FailureNotifier;
 import org.jboss.sbomer.dispatcher.core.port.spi.GenerationEventPublisher;
-import org.jboss.sbomer.events.kafka.common.ContextSpec;
-import org.jboss.sbomer.events.kafka.common.EnhancerSpec;
-import org.jboss.sbomer.events.kafka.common.GeneratorSpec;
-import org.jboss.sbomer.events.kafka.common.TargetSpec;
+import org.jboss.sbomer.dispatcher.core.utility.FailureUtility;
+import org.jboss.sbomer.events.kafka.common.*;
 import org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated;
 import org.jboss.sbomer.events.kafka.dispatcher.GenerationDataSpec;
 import org.jboss.sbomer.events.kafka.dispatcher.RecipeSpec;
@@ -26,40 +25,58 @@ import static org.jboss.sbomer.dispatcher.core.ApplicationConstants.COMPONENT_NA
 public class GenerationDispatcherService implements GenerationDispatcher {
 
     GenerationEventPublisher generationEventPublisher;
+    FailureNotifier failureNotifier;
 
     @Inject
-    public GenerationDispatcherService(GenerationEventPublisher generationEventPublisher) {
+    public GenerationDispatcherService(GenerationEventPublisher generationEventPublisher, FailureNotifier failureNotifier) {
         this.generationEventPublisher = generationEventPublisher;
+        this.failureNotifier = failureNotifier;
     }
 
     @Override
-    public void dispatch(RequestDataSpec requestData) {
-        log.info("Dispatching {} individual generation requests.", requestData.getGenerationRequests().size());
+    public void dispatch(RequestsCreated event) {
+        RequestDataSpec requestData = event.getRequestData();
+        log.info("Dispatching {} individual generation requests for RequestId '{}'.",
+                requestData.getGenerationRequests().size(), requestData.getRequestId());
 
-        // For each request in the batch...
-        for (var originalRequest : requestData.getGenerationRequests()) {
+        // --- The try-catch now wraps the entire loop ---
+        try {
+            // For each request in the batch...
+            for (var originalRequest : requestData.getGenerationRequests()) {
 
-            // --- THIS IS YOUR CORE BUSINESS LOGIC ---
-            // Build the recipe based on the target type.
-            RecipeSpec recipe = buildRecipeFor(originalRequest.getTarget());
+                // 1. Build the recipe. If this fails, it will be caught by the block below.
+                RecipeSpec recipe = buildRecipeFor(originalRequest.getTarget());
 
-            // Create the new, enriched event payload
-            GenerationDataSpec generationData = GenerationDataSpec.newBuilder()
-                    .setRequestId(requestData.getRequestId())
-                    .setGenerationRequest(originalRequest)
-                    .setRecipe(recipe)
-                    .build();
+                // 2. Create the event payload.
+                GenerationDataSpec generationData = GenerationDataSpec.newBuilder()
+                        .setRequestId(requestData.getRequestId())
+                        .setGenerationRequest(originalRequest)
+                        .setRecipe(recipe)
+                        .build();
 
-            // Build the final event with a new context
-            GenerationCreated event = GenerationCreated.newBuilder()
-                    .setContext(createNewContext()) // Helper to create new EventId, Timestamp, etc.
-                    .setGenerationData(generationData)
-                    .build();
+                GenerationCreated generationEvent = GenerationCreated.newBuilder()
+                        .setContext(createNewContext())
+                        .setGenerationData(generationData)
+                        .build();
 
-            // Send the new event to the output topic
-            generationEventPublisher.publish(event);
+                // 3. Publish the event. If this fails, it will also be caught.
+                generationEventPublisher.publish(generationEvent);
+            }
+        } catch (Exception e) {
+            // If ANY step inside the loop fails for ANY request...
+            log.error("Failed to dispatch batch for RequestId '{}' due to an error. Halting processing. Error: {}",
+                    requestData.getRequestId(), e.getMessage(), e);
+
+            FailureSpec failure = FailureUtility.buildFailureSpecFromException(e);
+
+            // Notify the failure system with the full context.
+            failureNotifier.notify(failure, event);
+
+            // Exit the method immediately, stopping any further processing.
+            return;
         }
     }
+
 
     /**
      * The "Recipe Book" - this is where the decision logic lives.

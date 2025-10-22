@@ -12,7 +12,7 @@ public interface GenerationDispatcher {
     /**
      * TODO
      */
-    public default void dispatch(RequestDataSpec requestData) {
+    public default void dispatch(RequestsCreated requestsCreated) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

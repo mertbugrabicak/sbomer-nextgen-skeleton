@@ -24,6 +24,6 @@ public class KafkaGenerationDispatcher {
     @Incoming("requests-created")
     public void dispatch(RequestsCreated requestsCreated) {
         log.info("Received requests created. Setting up and dispatching generators");
-        generationDispatcher.dispatch(requestsCreated.getRequestData());
+        generationDispatcher.dispatch(requestsCreated);
     }
 }
