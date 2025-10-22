@@ -1,0 +1,28 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.generator",
+  "type": "record",
+  "name": "GenerationFinished",
+  "doc": "Published when one or more base SBOMs are generated and enhancers need to be run.",
+  "fields": [
+    { "name": "Context", "type": "org.jboss.sbomer.events.kafka.common.ContextSpec" },
+    {
+      "name": "Data",
+      "type": {
+        "name": "GenerationFinishedData",
+        "type": "record",
+        "fields": [
+          {
+            "name": "BaseSbomUrls",
+            "doc": "A list of S3 URLs for the newly created, un-enhanced base SBOMs.",
+            "type": { "type": "array", "items": "string" }
+          },
+          {
+            "name": "OriginalEvent",
+            "doc": "The full 'GenerationCreated' event that triggered this process.",
+            "type": "org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated"
+          }
+        ]
+      }
+    }
+  ]
+}

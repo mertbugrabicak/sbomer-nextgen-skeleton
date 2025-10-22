@@ -11,6 +11,7 @@
         <module>errata-tool-adapter</module>
         <module>generation-dispatcher</module>
         <module>api-gateway</module>
+        <module>syft-generator</module>
     </modules>
 
     <properties>
