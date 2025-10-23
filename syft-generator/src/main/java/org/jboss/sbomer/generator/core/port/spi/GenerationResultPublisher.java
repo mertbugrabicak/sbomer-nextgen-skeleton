@@ -1,9 +1,7 @@
 package org.jboss.sbomer.generator.core.port.spi;
 
 
-import org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated;
-
-import java.util.List;
+import org.jboss.sbomer.generator.core.domain.dto.GenerationRecord;
 
 /**
  * <p>
@@ -16,5 +14,8 @@ import java.util.List;
  * 
  */
 public interface GenerationResultPublisher {
-    public void publishSuccess(GenerationCreated originalEvent, List<String> sbomUrls);
+    /**
+     * Publishes the final success event(s) for a completed generation.
+     */
+    void publishSuccess(GenerationRecord record);
 }
