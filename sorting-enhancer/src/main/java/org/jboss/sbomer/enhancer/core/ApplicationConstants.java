@@ -8,5 +8,6 @@ public class ApplicationConstants {
      * The unique identifier for this component, used as the HandlerType in events.
      */
     public static final String COMPONENT_NAME = "sorting-enhancer";
+    public static final String COMPONENT_VERSION = "1.0";
 
 }

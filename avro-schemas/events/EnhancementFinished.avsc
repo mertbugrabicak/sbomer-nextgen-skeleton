@@ -24,7 +24,7 @@
           {
             "name": "LastEnhancement",
             "doc": "The name of the enhancer that just completed its work.",
-            "type": "string"
+            "type": "org.jboss.sbomer.events.kafka.common.EnhancerSpec"
           },
           {
             "name": "OriginalEvent",

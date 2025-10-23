@@ -22,7 +22,11 @@
             "type": [
               "null",
               "org.jboss.sbomer.events.kafka.handler.RequestsCreated",
-              "org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated"
+              "org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated",
+              "org.jboss.sbomer.events.kafka.generator.GenerationFinished",
+              "org.jboss.sbomer.events.kafka.generator.GenerationFinal",
+              "org.jboss.sbomer.events.kafka.enhancer.EnhancementFinished",
+              "org.jboss.sbomer.events.kafka.enhancer.EnhancementFinal"
             ]
           }
         ]

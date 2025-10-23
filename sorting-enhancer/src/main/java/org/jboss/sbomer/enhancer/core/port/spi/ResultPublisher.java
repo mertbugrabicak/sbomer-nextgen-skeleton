@@ -5,6 +5,6 @@ import org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated;
 import java.util.List;
 
 public interface ResultPublisher {
-    void publishFinished(GenerationCreated originalEvent, List<String> lastEnhancedSbomUrls);
+    void publishFinished(GenerationCreated originalEvent, List<String> lastEnhancedSbomUrls, List<String> baseSbomUrls);
     void publishFinal(GenerationCreated originalEvent, List<String> finalSbomUrls);
 }

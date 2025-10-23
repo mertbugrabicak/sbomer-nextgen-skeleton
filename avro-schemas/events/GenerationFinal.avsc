@@ -1,5 +1,5 @@
 {
-  "namespace": "org.jboss.sbomer.events.generator",
+  "namespace": "org.jboss.sbomer.events.kafka.generator",
   "type": "record",
   "name": "GenerationFinal",
   "doc": "Published when one or more SBOMs are generated and no enhancers were requested.",

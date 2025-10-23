@@ -51,7 +51,8 @@ public class EnhancementService {
             if (isMyTurn(recipeEnhancers, null)) {
                 log.info("I am the first enhancer for Generation ID '{}'. Starting work.", originalEvent.getGenerationData().getGenerationRequest().getGenerationId());
                 List<String> inputUrls = event.getData().getBaseSbomUrls();
-                performEnhancement(originalEvent, inputUrls);
+                // Since I am the first enhancer, inputUrls are also baseSbomUrls
+                performEnhancement(originalEvent, inputUrls, inputUrls);
             }
         } catch (Exception e) {
             failureNotifier.notify(FailureUtility.buildFailureSpecFromException(e), event);
@@ -71,14 +72,15 @@ public class EnhancementService {
                 log.info("It is my turn to enhance Generation ID '{}'. Starting work.", originalEvent.getGenerationData().getGenerationRequest().getGenerationId());
                 // The input for this step is the output from the last step.
                 List<String> inputUrls = event.getData().getLastEnhancedSbomUrls();
-                performEnhancement(originalEvent, inputUrls);
+                List<String> baseSbomUrls = event.getData().getBaseSbomUrls();
+                performEnhancement(originalEvent, inputUrls, baseSbomUrls);
             }
         } catch (Exception e) {
             failureNotifier.notify(FailureUtility.buildFailureSpecFromException(e), event);
         }
     }
 
-    private void performEnhancement(GenerationCreated originalEvent, List<String> inputUrls) throws Exception {
+    private void performEnhancement(GenerationCreated originalEvent, List<String> inputUrls, List<String> baseSbomUrls) throws Exception {
         // 1. Download the latest SBOMs.
         List<String> sbomContents = sbomStorage.download(inputUrls);
 
@@ -93,13 +95,13 @@ public class EnhancementService {
         if (isLastEnhancerInChain(recipe)) {
             resultPublisher.publishFinal(originalEvent, newSbomUrls);
         } else {
-            resultPublisher.publishFinished(originalEvent, newSbomUrls);
+            resultPublisher.publishFinished(originalEvent, newSbomUrls, baseSbomUrls);
         }
     }
 
     // --- Private helper methods for business rules (Now Implemented) ---
 
-    private boolean isMyTurn(List<EnhancerSpec> recipe, String lastEnhancer) {
+    private boolean isMyTurn(List<EnhancerSpec> recipe, EnhancerSpec lastEnhancer) {
         if (lastEnhancer == null) {
             // This is the first enhancement step. Is it me?
             return !recipe.isEmpty() && COMPONENT_NAME.equals(recipe.get(0).getName());
@@ -107,7 +109,8 @@ public class EnhancementService {
 
         // Find the index of the last enhancer that ran.
         for (int i = 0; i < recipe.size(); i++) {
-            if (recipe.get(i).getName().equals(lastEnhancer)) {
+            // just check name and not version for now
+            if (recipe.get(i).getName().equals(lastEnhancer.getName())) {
                 // Check if there is a next step and if that next step is me.
                 int nextIndex = i + 1;
                 if (nextIndex < recipe.size()) {
