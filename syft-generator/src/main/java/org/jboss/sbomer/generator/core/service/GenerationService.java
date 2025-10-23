@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.io.DatumWriter;
+import org.apache.avro.io.EncoderFactory;
+import org.apache.avro.io.JsonEncoder;
+import org.apache.avro.specific.SpecificDatumWriter;
 import org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated;
 import org.jboss.sbomer.generator.core.domain.dto.GenerationRecord;
 import org.jboss.sbomer.generator.core.domain.enums.GenerationStatus;
@@ -14,6 +18,9 @@ import org.jboss.sbomer.generator.core.port.spi.GenerationResultPublisher;
 import org.jboss.sbomer.generator.core.port.spi.StateRepository;
 import org.jboss.sbomer.generator.core.utility.FailureUtility;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collections;
 
@@ -21,22 +28,14 @@ import java.util.Collections;
 @Slf4j
 public class GenerationService implements GenerationInitiator {
 
-    private final StateRepository stateRepository;
-    private final GenerationResultPublisher generationResultPublisher;
-    private final FailureNotifier failureNotifier;
-    private final ObjectMapper objectMapper; // For JSON serialization
+    @Inject
+    StateRepository stateRepository;
 
     @Inject
-    public GenerationService(
-            StateRepository stateRepository,
-            GenerationResultPublisher generationResultPublisher,
-            FailureNotifier failureNotifier,
-            ObjectMapper objectMapper) {
-        this.stateRepository = stateRepository;
-        this.generationResultPublisher = generationResultPublisher;
-        this.failureNotifier = failureNotifier;
-        this.objectMapper = objectMapper;
-    }
+    FailureNotifier failureNotifier;
+
+    // Use Avro's DatumWriter for reliable serialization
+    private final DatumWriter<GenerationCreated> writer = new SpecificDatumWriter<>(GenerationCreated.class);
 
     @Override
     public void initiateGeneration(GenerationCreated event) {
@@ -44,27 +43,36 @@ public class GenerationService implements GenerationInitiator {
         log.info("Creating new GenerationRecord for ID '{}'.", generationId);
 
         try {
-            // 1. Create a new GenerationRecord entity.
             GenerationRecord record = new GenerationRecord();
             record.setId(generationId);
             record.setStatus(GenerationStatus.NEW);
             record.setCreated(Instant.now());
-            record.setSbomUrls(Collections.emptyList()); // Initialize with an empty list.
+            record.setUpdated(record.getCreated());
+            record.setSbomUrls(Collections.emptyList());
 
-            // 2. Serialize the full event object to a JSON string for storage.
-            // This preserves the full context for the controller to use later.
-            record.setEvent(objectMapper.writeValueAsString(event));
+            record.setEvent(serializeEventToJson(event));
+            // --------------------------------------------------------
 
-            // 3. Use the repository port to save the new record to the database.
             stateRepository.save(record);
+            log.info("GenerationRecord for ID '{}' saved with status NEW.", generationId);
 
-            log.info("GenerationRecord for ID '{}' saved with status NEW. The scheduler will pick it up.", generationId);
-
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             log.error("Failed to serialize the GenerationCreated event for ID '{}' into JSON.", generationId, e);
-            // This is a critical system failure. If we can't even save the request,
-            // we should notify the failure system immediately.
             failureNotifier.notify(FailureUtility.buildFailureSpecFromException(e), event);
+        }
+    }
+
+    /**
+     * Helper method to serialize an Avro object to a JSON string in the format
+     * that Avro's JsonDecoder expects.
+     */
+    private String serializeEventToJson(GenerationCreated event) throws IOException {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            // Use pretty printing for readability in the database if desired
+            JsonEncoder encoder = EncoderFactory.get().jsonEncoder(GenerationCreated.getClassSchema(), outputStream, true);
+            writer.write(event, encoder);
+            encoder.flush();
+            return outputStream.toString(StandardCharsets.UTF_8);
         }
     }
 }

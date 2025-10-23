@@ -27,9 +27,21 @@ services:
       retries: 10
 
   apicurio-registry:
-    image: quay.io/apicurio/apicurio-registry-mem:2.5.10.Final
+    # Use the PostgreSQL version of the Apicurio Registry image
+    image: quay.io/apicurio/apicurio-registry-sql:2.5.10.Final
     ports:
       - "8081:8080"
+    depends_on:
+      postgres-db: # Make sure it waits for the database to be ready
+        condition: service_healthy
+    environment:
+      # --- Database Configuration ---
+      QUARKUS_DATASOURCE_DB_KIND: postgresql
+      QUARKUS_DATASOURCE_USERNAME: sbomeruser
+      QUARKUS_DATASOURCE_PASSWORD: sbomerpass
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres-db:5432/sbomerdb
+      # --- Other Apicurio Settings ---
+      REGISTRY_ENABLE_API_DOCS: "true"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
       interval: 10s
