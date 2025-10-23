@@ -96,9 +96,10 @@ public class GenerationDispatcherService implements GenerationDispatcher {
 
         } else if ("CONTAINER_IMAGE".equals(target.getType())) {
             generator = GeneratorSpec.newBuilder()
-                    .setName("syft")
+                    .setName("syft-generator")
                     .setVersion("1.5.0")
                     .build();
+            enhancers.add(EnhancerSpec.newBuilder().setName("sorting-enhancer").setVersion("1.0.0").build());
         } else {
             // Default or throw an error for unsupported types
             throw new IllegalArgumentException("Unsupported target type: " + target.getType());

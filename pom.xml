@@ -12,6 +12,7 @@
         <module>generation-dispatcher</module>
         <module>api-gateway</module>
         <module>syft-generator</module>
+        <module>sorting-enhancer</module>
     </modules>
 
     <properties>

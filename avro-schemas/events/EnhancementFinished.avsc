@@ -1,0 +1,38 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.enhancer",
+  "type": "record",
+  "name": "EnhancementFinished",
+  "doc": "Published when an intermediate enhancement step is completed and more enhancers are pending.",
+  "fields": [
+    { "name": "Context", "type": "org.jboss.sbomer.events.kafka.common.ContextSpec" },
+    {
+      "name": "Data",
+      "type": {
+        "name": "EnhancementFinishedData",
+        "type": "record",
+        "fields": [
+          {
+            "name": "BaseSbomUrls",
+            "doc": "The list of URLs for the original, un-enhanced base SBOMs from the Generator.",
+            "type": { "type": "array", "items": "string" }
+          },
+          {
+            "name": "LastEnhancedSbomUrls",
+            "doc": "The cumulative list of URLs for the SBOMs after each enhancement step. The last URL in the list is the most recent one.",
+            "type": { "type": "array", "items": "string" }
+          },
+          {
+            "name": "LastEnhancement",
+            "doc": "The name of the enhancer that just completed its work.",
+            "type": "string"
+          },
+          {
+            "name": "OriginalEvent",
+            "doc": "The full 'GenerationCreated' event that contains the complete recipe and context.",
+            "type": "org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated"
+          }
+        ]
+      }
+    }
+  ]
+}

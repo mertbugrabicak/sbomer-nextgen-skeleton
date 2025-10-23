@@ -121,6 +121,19 @@ services:
       APICURIO_REGISTRY_URL: http://apicurio-registry:8080/apis/registry/v2
       QUARKUS_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
 
+  sorting-enhancer:
+    build:
+      context: ./sorting-enhancer
+      dockerfile: src/main/docker/Dockerfile.jvm
+    depends_on:
+      kafka:
+        condition: service_healthy
+      apicurio-registry:
+        condition: service_healthy
+    environment:
+      APICURIO_REGISTRY_URL: http://apicurio-registry:8080/apis/registry/v2
+      QUARKUS_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+
   syft-generator:
     build:
       context: ./syft-generator
