@@ -21,72 +21,45 @@ public class KafkaSystemEventProcessor {
     SystemEventProcessor eventProcessor; // Inject the core logic port
 
     /**
-     * Consumes the initial 'requests.created' event to start tracking a new batch.
+     * A single consumer method that listens to all relevant topics defined
+     * in the 'sbomer-events' channel. It routes incoming events to the
+     * appropriate business logic based on their type.
      */
-    @Incoming("requests-created")
-    public void handleRequestsCreated(RequestsCreated event) {
-        log.info("Received 'requests.created' event with RequestId '{}'", event.getRequestData().getRequestId());
-        eventProcessor.processNewRequest(event);
-    }
+    @Incoming("sbomer-events")
+    public void handleEvent(Object event) {
+        log.debug("Received a new system event of type '{}'", event.getClass().getSimpleName());
 
-    /**
-     * Consumes 'generation.final' events, marking a generation as COMPLETED.
-     */
-    @Incoming("generation-final")
-    public void handleGenerationFinal(GenerationFinal generationFinalEvent) {
-        String generationId = generationFinalEvent.getData().getOriginalEvent().getGenerationData().getGenerationRequest().getGenerationId();
-        log.info("Received 'generation.final' for Generation ID '{}'", generationId);
-        eventProcessor.updateGenerationStatus(generationFinalEvent);
-    }
-
-    /**
-     * Consumes 'enhancement.final' events, marking a generation as COMPLETED.
-     */
-    @Incoming("enhancement-final")
-    public void handleEnhancementFinal(EnhancementFinal enhancementFinalEvent) {
-        String generationId = enhancementFinalEvent.getData().getOriginalEvent().getGenerationData().getGenerationRequest().getGenerationId();
-        log.info("Received 'enhancement.final' for Generation ID '{}'", generationId);
-        eventProcessor.updateGenerationStatus(enhancementFinalEvent);
-    }
-
-    /**
-     * Consumes intermediate generation events to update the status to IN_PROGRESS.
-     */
-    @Incoming("generation-finished")
-    public void handleIntermediateStatusForGeneration(GenerationFinished generationFinishedEvent) {
-        String generationId = generationFinishedEvent.getData().getOriginalEvent().getGenerationData().getGenerationRequest().getGenerationId();
-        log.info("Received intermediate 'generation.finished' for Generation ID '{}'", generationId);
-        eventProcessor.updateGenerationStatus(generationFinishedEvent);
-    }
-
-    /**
-     * Consumes intermediate enhancement events to update the status to IN_PROGRESS.
-     */
-    @Incoming("enhancement-finished")
-    public void handleIntermediateStatus(EnhancementFinished enhancementFinishedEvent) {
-        String generationId = enhancementFinishedEvent.getData().getOriginalEvent().getGenerationData().getGenerationRequest().getGenerationId();
-        log.info("Received intermediate 'enhancement.finished' for Generation ID '{}'", generationId);
-        eventProcessor.updateGenerationStatus(enhancementFinishedEvent);
-    }
-
-    /**
-     * Consumes 'processing.failed' events to mark a generation as FAILED.
-     */
-    @Incoming("processing-failed")
-    public void handleProcessingFailed(ProcessingFailed processingFailedEvent) {
-        String generationId = findGenerationIdInSourceEvent(processingFailedEvent.getErrorData().getSourceEvent());
-
-        if (generationId != null) {
-            log.info("Received 'processing.failed' for Generation ID '{}'", generationId);
-            String reason = processingFailedEvent.getErrorData().getFailure().getReason();
-            eventProcessor.updateGenerationStatus(processingFailedEvent);
+        // Use pattern matching with instanceof to route the event
+        if (event instanceof RequestsCreated rc) {
+            log.info("Processing 'requests.created' event with RequestId '{}'", rc.getRequestData().getRequestId());
+            eventProcessor.processNewRequest(rc);
+        } else if (event instanceof GenerationFinished gf) {
+            String id = gf.getData().getOriginalEvent().getGenerationData().getGenerationRequest().getGenerationId();
+            log.info("Processing 'generation.finished' for Generation ID '{}'", id);
+            eventProcessor.updateGenerationStatus(gf);
+        } else if (event instanceof GenerationFinal gfn) {
+            String id = gfn.getData().getOriginalEvent().getGenerationData().getGenerationRequest().getGenerationId();
+            log.info("Processing 'generation.final' for Generation ID '{}'", id);
+            eventProcessor.updateGenerationStatus(gfn);
+        } else if (event instanceof EnhancementFinished ef) {
+            String id = ef.getData().getOriginalEvent().getGenerationData().getGenerationRequest().getGenerationId();
+            log.info("Processing 'enhancement.finished' for Generation ID '{}'", id);
+            eventProcessor.updateGenerationStatus(ef);
+        } else if (event instanceof EnhancementFinal efn) {
+            String id = efn.getData().getOriginalEvent().getGenerationData().getGenerationRequest().getGenerationId();
+            log.info("Processing 'enhancement.final' for Generation ID '{}'", id);
+            eventProcessor.updateGenerationStatus(efn);
+        } else if (event instanceof ProcessingFailed pf) {
+            String id = findGenerationIdInSourceEvent(pf.getErrorData().getSourceEvent());
+            log.info("Processing 'processing.failed' for Generation ID '{}'", id);
+            eventProcessor.updateGenerationStatus(pf);
         } else {
-            log.warn("Received a 'processing.failed' event with an unknown or unsupported source event type. Could not extract GenerationId.");
+            log.warn("Received an unknown event type that will be ignored: {}", event.getClass().getName());
         }
     }
 
     /**
-     * Helper to safely extract the GenerationId from the Avro union type.
+     * Helper to safely extract the GenerationId from the Avro union type in a ProcessingFailed event.
      */
     private String findGenerationIdInSourceEvent(Object sourceEvent) {
         if (sourceEvent instanceof GenerationCreated gc) {
@@ -100,7 +73,6 @@ public class KafkaSystemEventProcessor {
         } else if (sourceEvent instanceof EnhancementFinal efn) {
             return efn.getData().getOriginalEvent().getGenerationData().getGenerationRequest().getGenerationId();
         }
-        // Add other event types here as needed.
         return null;
     }
 }

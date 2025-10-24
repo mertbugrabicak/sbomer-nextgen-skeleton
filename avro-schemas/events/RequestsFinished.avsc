@@ -1,0 +1,47 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.status",
+  "type": "record",
+  "name": "RequestsFinished",
+  "doc": "Published when all individual generation requests for a parent RequestId have been successfully completed.",
+  "fields": [
+    { "name": "Context", "type": "org.jboss.sbomer.events.kafka.common.ContextSpec" },
+    {
+      "name": "Data",
+      "type": {
+        "name": "RequestsFinishedData",
+        "type": "record",
+        "fields": [
+          {
+            "name": "RequestId",
+            "type": "string"
+          },
+          {
+            "name": "Publishers",
+            "doc": "The list of publishers that should handle these final SBOMs.",
+            "type": { "type": "array", "items": "org.jboss.sbomer.events.kafka.common.PublisherSpec" },
+            "default": []
+          },
+          {
+            "name": "CompletedGenerations",
+            "type": {
+              "type": "array",
+              "items": {
+                "name": "CompletedGeneration",
+                "type": "record",
+                "fields": [
+                  { "name": "GenerationId", "type": "string" },
+                  { "name": "Target", "type": "org.jboss.sbomer.events.kafka.common.TargetSpec" },
+                  {
+                    "name": "SbomUrls",
+                    "doc": "A list of final URLs for this generation's SBOMs.",
+                    "type": { "type": "array", "items": "string" }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

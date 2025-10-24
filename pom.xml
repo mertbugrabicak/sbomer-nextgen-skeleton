@@ -13,6 +13,7 @@
         <module>api-gateway</module>
         <module>syft-generator</module>
         <module>sorting-enhancer</module>
+        <module>status-tracker</module>
     </modules>
 
     <properties>
