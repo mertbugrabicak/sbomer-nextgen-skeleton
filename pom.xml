@@ -13,7 +13,7 @@
         <module>api-gateway</module>
         <module>syft-generator</module>
         <module>sorting-enhancer</module>
-        <module>enhancement-service</module>
+        <module>manifest-service</module>
     </modules>
 
     <properties>

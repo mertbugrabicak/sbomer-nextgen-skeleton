@@ -3,6 +3,10 @@ package org.jboss.sbomer.generation.service.core.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.io.DatumWriter;
+import org.apache.avro.io.EncoderFactory;
+import org.apache.avro.io.JsonEncoder;
+import org.apache.avro.specific.SpecificDatumWriter;
 import org.jboss.sbomer.events.kafka.generator.GenerationUpdate;
 import org.jboss.sbomer.events.kafka.generator.UpdateDataSpec;
 import org.jboss.sbomer.generation.service.core.domain.dto.GenerationRecord;
@@ -20,6 +24,9 @@ import org.jboss.sbomer.events.kafka.dispatcher.GenerationDataSpec;
 import org.jboss.sbomer.events.kafka.dispatcher.RecipeSpec;
 import org.jboss.sbomer.events.kafka.handler.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +43,9 @@ public class GenerationService implements GenerationProcessor, GenerationStatusP
     GenerationRepository generationRepository;
     FailureNotifier failureNotifier;
 
+    private final DatumWriter<GenerationCreated> writer = new SpecificDatumWriter<>(GenerationCreated.class);
+
+
     @Inject
     public GenerationService(GenerationScheduler generationScheduler, GenerationRepository generationRepository, FailureNotifier failureNotifier) {
         this.generationRepository = generationRepository;
@@ -43,6 +53,7 @@ public class GenerationService implements GenerationProcessor, GenerationStatusP
         this.failureNotifier = failureNotifier;
     }
 
+    // TODO save initial generation to database
     @Override
     public void processGenerations(RequestsCreated event) {
         RequestDataSpec requestData = event.getRequestData();
@@ -186,4 +197,20 @@ public class GenerationService implements GenerationProcessor, GenerationStatusP
         generationRepository.update(record);
         log.info("Successfully updated GenerationRecord '{}'", generationId);
     }
+
+    /**
+     * Helper method to serialize an Avro object to a JSON string in the format
+     * that Avro's JsonDecoder expects.
+     */
+    private String serializeEventToJson(GenerationCreated event) throws IOException {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            // Use pretty printing for readability in the database if desired
+            JsonEncoder encoder = EncoderFactory.get().jsonEncoder(GenerationCreated.getClassSchema(), outputStream, true);
+            writer.write(event, encoder);
+            encoder.flush();
+            return outputStream.toString(StandardCharsets.UTF_8);
+        }
+    }
+
+
 }

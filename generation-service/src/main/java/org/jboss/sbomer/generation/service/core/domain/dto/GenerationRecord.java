@@ -22,6 +22,7 @@
         private GenerationResult result;
         private String reason;
         private String event;
+        private String requestId;
         private Map<String, String> metadata;
         private List<String> sbomUrls;
 
