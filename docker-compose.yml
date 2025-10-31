@@ -110,9 +110,9 @@ services:
       APICURIO_REGISTRY_URL: http://apicurio-registry:8080/apis/registry/v2
       QUARKUS_MESSAGING_OUTGOING_GENERATIONS_REQUESTS_BOOTSTRAP_SERVERS: kafka:9093
 
-  generation-dispatcher:
+  generation-service:
     build:
-      context: ./generation-dispatcher
+      context: ./generation-service
       dockerfile: src/main/docker/Dockerfile.jvm
     depends_on:
       kafka:

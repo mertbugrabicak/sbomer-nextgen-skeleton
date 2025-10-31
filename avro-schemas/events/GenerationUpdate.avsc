@@ -1,0 +1,64 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.generator",
+  "type": "record",
+  "name": "GenerationUpdate",
+  "doc": "Event published by a generator to update the status of a specific SBOM generation task.",
+  "fields": [
+    {
+      "name": "Context",
+      "type": "org.jboss.sbomer.events.kafka.common.ContextSpec"
+    },
+    {
+      "name": "UpdateData",
+      "type": {
+        "name": "UpdateDataSpec",
+        "type": "record",
+        "fields": [
+          {
+            "name": "GenerationId",
+            "type": "string",
+            "doc": "The unique ID of the generation task being updated. This is the correlation key."
+          },
+          {
+            "name": "Status",
+            "type": {
+              "name": "GenerationStatus",
+              "type": "enum",
+              "symbols": [
+                "NEW",
+                "SCHEDULED",
+                "INITIALIZING",
+                "INITIALIZED",
+                "GENERATING",
+                "FINISHED",
+                "FAILED"
+              ],
+              "doc": "The new status of the generation task. Mirrors the internal domain enum."
+            }
+          },
+          {
+            "name": "ResultCode",
+            "type": ["null", "int"],
+            "default": null,
+            "doc": "The final result code, set only when Status is FINISHED or FAILED. Maps to the GenerationResult enum via its 'code' value."
+          },
+          {
+            "name": "Reason",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "A human-readable reason, set only when Status is FAILED."
+          },
+          {
+            "name": "SbomUrls",
+            "type": [
+              "null",
+              { "type": "array", "items": "string" }
+            ],
+            "default": null,
+            "doc": "A list of URLs to the generated SBOMs, set only when Status is FINISHED and ResultCode is 0 (SUCCESS)."
+          }
+        ]
+      }
+    }
+  ]
+}
