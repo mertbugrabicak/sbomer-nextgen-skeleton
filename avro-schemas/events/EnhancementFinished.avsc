@@ -29,7 +29,7 @@
           {
             "name": "OriginalEvent",
             "doc": "The full 'GenerationCreated' event that contains the complete recipe and context.",
-            "type": "org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated"
+            "type": "org.jboss.sbomer.events.kafka.generation.GenerationCreated"
           }
         ]
       }

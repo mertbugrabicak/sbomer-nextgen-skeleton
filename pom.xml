@@ -9,7 +9,7 @@
 
     <modules>
         <module>errata-tool-adapter</module>
-        <module>generation-service</module>
+        <module>sbom-service</module>
         <module>api-gateway</module>
         <module>syft-generator</module>
         <module>sorting-enhancer</module>

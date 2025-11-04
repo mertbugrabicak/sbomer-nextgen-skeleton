@@ -1,5 +1,5 @@
 {
-  "namespace": "org.jboss.sbomer.events.kafka.dispatcher",
+  "namespace": "org.jboss.sbomer.events.kafka.generation",
   "type": "record",
   "name": "GenerationCreated",
   "doc": "Event published for a single, specific SBOM generation task with a fully resolved recipe.",

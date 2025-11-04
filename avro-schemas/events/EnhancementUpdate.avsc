@@ -1,0 +1,69 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.enhancer",
+  "type": "record",
+  "name": "EnhancementUpdate",
+  "doc": "Event published by an enhancer to update the status of a specific SBOM enhancement task.",
+  "fields": [
+    {
+      "name": "Context",
+      "type": "org.jboss.sbomer.events.kafka.common.ContextSpec"
+    },
+    {
+      "name": "UpdateData",
+      "type": {
+        "name": "EnhancementUpdateDataSpec",
+        "type": "record",
+        "fields": [
+          {
+            "name": "GenerationId",
+            "type": "string",
+            "doc": "The unique ID of the generation task this enhancement belongs to. This is the primary correlation key."
+          },
+          {
+            "name": "RequestId",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "The unique ID of the original batch request. For correlation and logging."
+          },
+          {
+            "name": "Status",
+            "type": {
+              "name": "EnhancementStatus",
+              "type": "enum",
+              "symbols": [
+                "NEW",
+                "SCHEDULED",
+                "ENHANCING",
+                "FINISHED",
+                "FAILED"
+              ],
+              "doc": "The new status of the enhancement task."
+            }
+          },
+          {
+            "name": "ResultCode",
+            "type": ["null", "int"],
+            "default": null,
+            "doc": "The final result code, set only when Status is FINISHED or FAILED."
+          },
+          {
+            "name": "Reason",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "A human-readable reason, set only when Status is FAILED."
+          },
+          {
+            "name": "EnhancedSbomUrls",
+            "type": [
+              "null",
+              { "type": "array", "items": "string" }
+            ],
+            "default": null,
+            "doc": "A list of URLs to the *enhanced* SBOMs, set only when Status is FINISHED and ResultCode is 0 (SUCCESS)."
+          }
+        ]
+      }
+    }
+  ]
+}
+

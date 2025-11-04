@@ -1,0 +1,36 @@
+{
+  "namespace": "org.jboss.sbomer.events.kafka.generation",
+  "type": "record",
+  "name": "EnhancementCreated",
+  "doc": "Event published by the orchestrator to trigger a single, specific SBOM enhancement task. Contains the full parent GenerationCreated event for context.",
+  "fields": [
+    {
+      "name": "Context",
+      "type": "org.jboss.sbomer.events.kafka.common.ContextSpec"
+    },
+    {
+      "name": "EnhancementData",
+      "type": {
+        "name": "EnhancementDataSpec",
+        "type": "record",
+        "fields": [
+          {
+            "name": "ParentGenerationEvent",
+            "type": "org.jboss.sbomer.events.kafka.generation.GenerationCreated",
+            "doc": "The full original GenerationCreated event for complete context (target, full recipe, etc.)."
+          },
+          {
+            "name": "InputSbomUrls",
+            "type": { "type": "array", "items": "string" },
+            "doc": "The list of SBOM URLs from the *previous* step (generation or prior enhancement) that this enhancer should use as input."
+          },
+          {
+            "name": "Enhancer",
+            "type": "org.jboss.sbomer.events.kafka.common.EnhancerSpec",
+            "doc": "The specific enhancer from the recipe that should be executed in this step."
+          }
+        ]
+      }
+    }
+  ]
+}

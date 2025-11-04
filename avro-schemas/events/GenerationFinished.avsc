@@ -19,7 +19,7 @@
           {
             "name": "OriginalEvent",
             "doc": "The full 'GenerationCreated' event that triggered this process.",
-            "type": "org.jboss.sbomer.events.kafka.dispatcher.GenerationCreated"
+            "type": "org.jboss.sbomer.events.kafka.generation.GenerationCreated"
           }
         ]
       }
